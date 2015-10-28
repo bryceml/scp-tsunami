@@ -196,7 +196,12 @@ Other options
   --rcp       use rcp to transfer files
   --chunkdir  specify directory for storing chunks on all hosts
   --help      display this message
-  --logfile   where to write log information'''
+  --logfile   where to write log information
+
+Also Note that the default location for the chunks to be stored during the transfer
+is in /tmp.  This may not work for really large files.  Make sure to change the
+CHUNK_DIR directory to an existing one that has both read and write access for the 
+user that has at least the capacity to hold the file.'''
 
 ### End global data ###
 
@@ -617,14 +622,14 @@ class Splitter(threading.Thread):
                 options.chunksize, options.filename, options.chunk_base_name))
 
         try:
-            curname = self.s.readline().split()[2].strip("`'")[3:-3]
+            curname = (self.s.readline().split()[2].strip("`'"))[3:-3]
         except Exception:
             # if file is too small to split
             curname = options.chunk_base_name + 'a'
             shutil.copy(options.filename, curname)
         while curname:
             try:
-                prevname = self.s.readline().split()[2].strip("`'")[3:-3]
+                prevname = (self.s.readline().split()[2].strip("`'"))[3:-3]
             except Exception:
                 #print 'err split', sys.exc_info()[1]
                 prevname = None
